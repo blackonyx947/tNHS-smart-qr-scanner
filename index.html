@@ -55,7 +55,47 @@ body {
   padding: 10px;
 }
 
+.photo {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+  margin: 0 auto 15px auto;
+}
 
+.photoPlaceholder {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 15px auto;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  background: #eeeeee;
+  color: #666666;
+}
+
+.name {
+  font-size: 26px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.details {
+  font-size: 20px;
+  text-align: center;
+  margin-top: 6px;
+}
+
+.lrn {
+  font-size: 18px;
+  text-align: center;
+  margin-top: 6px;
+}
 /* =====================================
    HEADER
    ===================================== */
@@ -1161,89 +1201,45 @@ function showResult(r) {
 
 function studentHtml(s) {
 
-  if (!s) {
+  let h = '';
 
-    return "";
+  // Use the image data supplied by Apps Script.
+  // This works even when the Google Drive photo is restricted.
+  if (s.photoDataUrl) {
 
-  }
-
-
-  let photo;
-
-
-  if (s.photoUrl) {
-
-    photo =
-
+    h +=
       '<img class="photo" ' +
+      'src="' + esc(s.photoDataUrl) + '" ' +
+      'alt="Student Photo">';
 
-      'src="' +
-      safeUrl(s.photoUrl) +
-      '" ' +
+  } else {
 
-      'onerror="' +
-
-      "this.style.display='none';" +
-
-      "this.nextElementSibling.style.display='flex';" +
-
-      '">' +
-
-      '<div class="photoFallback" ' +
-
-      'style="display:none">' +
-
+    h +=
+      '<div class="photoPlaceholder">' +
       'PHOTO NOT AVAILABLE' +
-
       '</div>';
-
   }
 
-  else {
-
-    photo =
-
-      '<div class="photoFallback">' +
-
-      'PHOTO NOT AVAILABLE' +
-
-      '</div>';
-
-  }
-
-
-  return (
-
-    photo +
-
+  h +=
     '<div class="name">' +
+    esc(s.name || '') +
+    '</div>';
 
-    escapeHtml(s.name) +
-
-    '</div>' +
-
-    '<div class="grade">' +
-
+  h +=
+    '<div class="details">' +
     'Grade ' +
+    esc(s.grade || '') +
+    ' - ' +
+    esc(s.section || '') +
+    '</div>';
 
-    escapeHtml(s.grade) +
-
-    ' — ' +
-
-    escapeHtml(s.section) +
-
-    '</div>' +
-
+  h +=
     '<div class="lrn">' +
-
     'LRN: ' +
+    esc(s.lrn || '') +
+    '</div>';
 
-    escapeHtml(s.lrn) +
-
-    '</div>'
-
-  );
-
+  return h;
 }
 
 
