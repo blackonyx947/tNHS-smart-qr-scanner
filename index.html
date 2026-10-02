@@ -3,1570 +3,1609 @@
 
 <head>
 
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width,
-               initial-scale=1,
-               maximum-scale=1">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<title>
-TNHS Smart QR Gate Scanner
-</title>
+  <title>TNHS Smart QR Gate Scanner</title>
 
-<!-- QR SCANNER LIBRARY -->
-<script src="https://unpkg.com/html5-qrcode"
-        type="text/javascript">
-</script>
 
+  <!-- QR SCANNER LIBRARY -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
-<style>
 
-* {
-  box-sizing: border-box;
-}
+  <style>
 
+    * {
+      box-sizing: border-box;
+    }
 
-body {
 
-  margin: 0;
+    body {
 
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
+      margin: 0;
 
-  background:
-    #eef3f8;
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
-  color:
-    #17324d;
-}
+      background:
+        linear-gradient(
+          135deg,
+          #eef7ff,
+          #f8f5ff
+        );
 
+      color: #222;
 
-.container {
+      min-height: 100vh;
+    }
 
-  width: 100%;
 
-  max-width: 540px;
+    .container {
 
-  margin: auto;
+      width: 100%;
 
-  padding: 10px;
-}
+      max-width: 600px;
 
-.photo {
-  width: 180px;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 12px;
-  display: block;
-  margin: 0 auto 15px auto;
-}
+      margin: auto;
 
-.photoPlaceholder {
-  width: 180px;
-  height: 180px;
-  margin: 0 auto 15px auto;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 14px;
-  font-weight: bold;
-  background: #eeeeee;
-  color: #666666;
-}
+      padding: 15px;
+    }
 
-.name {
-  font-size: 26px;
-  font-weight: bold;
-  text-align: center;
-}
 
-.details {
-  font-size: 20px;
-  text-align: center;
-  margin-top: 6px;
-}
+    .header {
 
-.lrn {
-  font-size: 18px;
-  text-align: center;
-  margin-top: 6px;
-}
-/* =====================================
-   HEADER
-   ===================================== */
+      background:
+        linear-gradient(
+          135deg,
+          #075985,
+          #0f766e
+        );
 
-.header {
+      color: white;
 
-  background: white;
+      padding: 18px;
 
-  border-radius: 16px;
+      border-radius: 18px;
 
-  padding: 15px;
+      text-align: center;
 
-  box-shadow:
-    0 3px 12px
-    rgba(0,0,0,.12);
+      margin-bottom: 15px;
 
-}
+      box-shadow:
+        0 5px 15px
+        rgba(0,0,0,0.15);
+    }
 
 
-.school {
+    .header h1 {
 
-  text-align: center;
+      margin: 0;
 
-  font-size: 19px;
+      font-size: 24px;
+    }
 
-  font-weight: 900;
 
-  color: #123b5d;
+    .header p {
 
-}
+      margin: 5px 0 0;
 
+      font-size: 14px;
+    }
 
-.systemTitle {
 
-  text-align: center;
+    .mode-buttons {
 
-  font-size: 12px;
+      display: flex;
 
-  font-weight: bold;
+      gap: 10px;
 
-  color: #64788a;
+      margin-bottom: 15px;
+    }
 
-  margin-top: 4px;
 
-}
+    .mode-buttons button {
 
+      flex: 1;
 
-/* =====================================
-   MODE
-   ===================================== */
+      padding: 14px;
 
-.mode {
+      border: none;
 
-  margin-top: 12px;
+      border-radius: 12px;
 
-  padding: 12px;
+      font-size: 17px;
 
-  border-radius: 12px;
+      font-weight: bold;
 
-  text-align: center;
+      cursor: pointer;
 
-  font-size: 20px;
+      background: #dbeafe;
 
-  font-weight: 900;
+      color: #075985;
+    }
 
-}
 
+    .mode-buttons button.active {
 
-.entry {
+      background: #075985;
 
-  background: #dff5e8;
+      color: white;
+    }
 
-  color: #087443;
 
-  border: 2px solid #159957;
+    #reader {
 
-}
+      width: 100%;
 
+      background: #000;
 
-.exit {
+      border-radius: 18px;
 
-  background: #e3eefb;
+      overflow: hidden;
 
-  color: #174f8c;
+      min-height: 300px;
+    }
 
-  border: 2px solid #3c78b5;
 
-}
+    .scanner-label {
 
+      text-align: center;
 
-.modeButtons {
+      font-weight: bold;
 
-  display: flex;
+      margin: 10px 0;
 
-  gap: 8px;
+      color: #075985;
+    }
 
-  margin-top: 9px;
 
-}
+    .result {
 
+      display: none;
 
-.modeButtons button {
+      background: white;
 
-  flex: 1;
+      border-radius: 18px;
 
-  border: none;
+      padding: 20px;
 
-  border-radius: 9px;
+      margin-top: 15px;
 
-  padding: 12px;
+      box-shadow:
+        0 5px 20px
+        rgba(0,0,0,0.12);
 
-  background: #607080;
+      text-align: center;
+    }
 
-  color: white;
 
-  font-size: 15px;
+    .status {
 
-  font-weight: 900;
+      padding: 14px;
 
-}
+      border-radius: 12px;
 
+      font-size: 21px;
 
-/* =====================================
-   CAMERA
-   ===================================== */
+      font-weight: bold;
 
-.cameraCard {
+      margin-bottom: 15px;
+    }
 
-  background: white;
 
-  margin-top: 12px;
+    .status.valid {
 
-  padding: 12px;
+      background: #dcfce7;
 
-  border-radius: 16px;
+      color: #166534;
+    }
 
-  box-shadow:
-    0 3px 12px
-    rgba(0,0,0,.10);
 
-}
+    .status.invalid {
 
+      background: #fee2e2;
 
-.cameraTitle {
+      color: #991b1b;
+    }
 
-  text-align: center;
 
-  font-size: 16px;
+    .status.warning {
 
-  font-weight: 900;
+      background: #fee2e2;
 
-  margin-bottom: 10px;
+      color: #991b1b;
+    }
 
-}
 
+    .student-info {
 
-#reader {
+      text-align: left;
 
-  width: 100%;
+      margin-top: 10px;
+    }
 
-  overflow: hidden;
 
-  border-radius: 12px;
+    .student-row {
 
-}
+      padding: 9px 0;
 
+      border-bottom:
+        1px solid #e5e7eb;
 
-.cameraStatus {
+      font-size: 16px;
+    }
 
-  text-align: center;
 
-  margin-top: 8px;
+    .student-row strong {
 
-  font-size: 13px;
+      display: inline-block;
 
-  font-weight: bold;
+      width: 105px;
 
-  color: #607080;
+      color: #475569;
+    }
 
-}
 
+    .photo-box {
 
-/* =====================================
-   RESULT
-   ===================================== */
+      width: 140px;
 
-.result {
+      height: 170px;
 
-  background: white;
+      margin: 0 auto 15px;
 
-  margin-top: 12px;
+      border-radius: 12px;
 
-  padding: 18px;
+      overflow: hidden;
 
-  border-radius: 16px;
+      background: #f1f5f9;
 
-  min-height: 480px;
+      display: flex;
 
-  text-align: center;
+      align-items: center;
 
-  box-shadow:
-    0 3px 12px
-    rgba(0,0,0,.10);
+      justify-content: center;
 
-}
+      color: #64748b;
 
+      font-size: 13px;
+    }
 
-.ready {
 
-  display: flex;
+    .photo-box img {
 
-  align-items: center;
+      width: 100%;
 
-  justify-content: center;
+      height: 100%;
 
-}
+      object-fit: cover;
 
+      display: block;
+    }
 
-/* =====================================
-   VALID / INVALID ID
-   ===================================== */
 
-.scanResult {
+    .remark {
 
-  width: 100%;
+      margin-top: 18px;
 
-  padding: 14px 10px;
+      padding: 16px;
 
-  border-radius: 10px;
+      border-radius: 12px;
 
-  margin-bottom: 15px;
+      font-size: 22px;
 
-  font-size: 20px;
+      font-weight: bold;
+    }
 
-  font-weight: 900;
 
-}
+    .remark.green {
 
+      background: #16a34a;
 
-.valid {
+      color: white;
+    }
 
-  background: #dff5e8;
 
-  color: #087443;
+    .remark.red {
 
-  border: 3px solid #159957;
+      background: #dc2626;
 
-}
+      color: white;
+    }
 
 
-.invalid {
+    .remark.blue {
 
-  background: #fde3e3;
+      background: #2563eb;
 
-  color: #a71919;
+      color: white;
+    }
 
-  border: 3px solid #b71919;
 
-}
+    .scan-next {
 
+      width: 100%;
 
-/* =====================================
-   PHOTO
-   ===================================== */
+      margin-top: 18px;
 
-.photo {
+      padding: 16px;
 
-  width: 150px;
+      border: none;
 
-  height: 180px;
+      border-radius: 12px;
 
-  object-fit: cover;
+      background: #075985;
 
-  border-radius: 10px;
+      color: white;
 
-  border: 2px solid #cbd5df;
+      font-size: 18px;
 
-  background: #edf1f5;
+      font-weight: bold;
 
-}
+      cursor: pointer;
+    }
 
 
-.photoFallback {
+    .scan-next:active {
 
-  width: 150px;
+      transform: scale(0.98);
+    }
 
-  height: 180px;
 
-  display: flex;
+    .error-message {
 
-  align-items: center;
+      margin-top: 10px;
 
-  justify-content: center;
+      color: #991b1b;
 
-  margin: auto;
+      text-align: center;
 
-  border-radius: 10px;
+      font-size: 14px;
+    }
 
-  border: 2px dashed #b8c5d1;
 
-  background: #f1f4f7;
+    .loading {
 
-  color: #71808e;
+      text-align: center;
 
-  font-size: 13px;
+      padding: 15px;
 
-  font-weight: bold;
+      color: #475569;
 
-}
+      display: none;
+    }
 
-
-/* =====================================
-   STUDENT INFORMATION
-   ===================================== */
-
-.name {
-
-  margin-top: 12px;
-
-  font-size: 23px;
-
-  font-weight: 900;
-
-  color: #17324d;
-
-}
-
-
-.grade {
-
-  margin-top: 5px;
-
-  font-size: 18px;
-
-  font-weight: 800;
-
-  color: #34556f;
-
-}
-
-
-.lrn {
-
-  margin-top: 5px;
-
-  font-size: 16px;
-
-  color: #405a70;
-
-}
-
-
-/* =====================================
-   REMARK
-   ===================================== */
-
-.remarkLabel {
-
-  margin-top: 17px;
-
-  font-size: 12px;
-
-  font-weight: 900;
-
-  color: #64788a;
-
-}
-
-
-.remark {
-
-  width: 100%;
-
-  margin-top: 5px;
-
-  padding: 14px 10px;
-
-  border-radius: 10px;
-
-  color: white;
-
-  font-size: 20px;
-
-  font-weight: 900;
-
-}
-
-
-.remarkGreen {
-
-  background: #159957;
-
-  border: 3px solid #087443;
-
-}
-
-
-.remarkRed {
-
-  background: #b71919;
-
-  border: 3px solid #861010;
-
-}
-
-
-/* =====================================
-   BUTTON
-   ===================================== */
-
-.next {
-
-  width: 100%;
-
-  margin-top: 18px;
-
-  padding: 15px;
-
-  border: none;
-
-  border-radius: 11px;
-
-  background: #1f4e78;
-
-  color: white;
-
-  font-size: 18px;
-
-  font-weight: 900;
-
-}
-
-
-.next:active {
-
-  transform: scale(.98);
-
-}
-
-
-.small {
-
-  font-size: 12px;
-
-  color: #708090;
-
-}
-
-</style>
+  </style>
 
 </head>
 
 
 <body>
 
+  <div class="container">
 
-<div class="container">
+
+    <div class="header">
+
+      <h1>
+        TNHS SMART QR GATE SCANNER
+      </h1>
+
+      <p>
+        Talaga National High School
+      </p>
+
+    </div>
 
 
-<!-- =====================================
-     HEADER
-     ===================================== -->
+    <!-- ENTRY / EXIT -->
 
-<div class="header">
+    <div class="mode-buttons">
 
-  <div class="school">
-    TALAGA NATIONAL HIGH SCHOOL
+      <button
+        id="entryBtn"
+        class="active"
+        onclick="setMode('ENTRY')"
+      >
+        ENTRY
+      </button>
+
+      <button
+        id="exitBtn"
+        onclick="setMode('EXIT')"
+      >
+        EXIT
+      </button>
+
+    </div>
+
+
+    <div
+      id="scannerArea"
+    >
+
+      <div class="scanner-label">
+        Scan Student QR Code
+      </div>
+
+      <div id="reader"></div>
+
+      <div
+        id="errorMessage"
+        class="error-message"
+      ></div>
+
+    </div>
+
+
+    <div
+      id="loading"
+      class="loading"
+    >
+      Checking student record...
+    </div>
+
+
+    <!-- RESULT -->
+
+    <div
+      id="result"
+      class="result"
+    >
+
+      <div
+        id="status"
+        class="status valid"
+      >
+        VALID ID - Record Found
+      </div>
+
+
+      <!-- PHOTO OPTIONAL -->
+
+      <div
+        id="photoBox"
+        class="photo-box"
+      >
+        Photo unavailable
+      </div>
+
+
+      <div class="student-info">
+
+        <div class="student-row">
+
+          <strong>Name:</strong>
+
+          <span id="studentName"></span>
+
+        </div>
+
+
+        <div class="student-row">
+
+          <strong>Grade:</strong>
+
+          <span id="studentGrade"></span>
+
+        </div>
+
+
+        <div class="student-row">
+
+          <strong>Section:</strong>
+
+          <span id="studentSection"></span>
+
+        </div>
+
+
+        <div class="student-row">
+
+          <strong>LRN:</strong>
+
+          <span id="studentLRN"></span>
+
+        </div>
+
+
+        <div class="student-row">
+
+          <strong>Student ID:</strong>
+
+          <span id="studentId"></span>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="remark"
+        class="remark green"
+      ></div>
+
+
+      <button
+        class="scan-next"
+        onclick="scanNext()"
+      >
+        SCAN NEXT
+      </button>
+
+    </div>
+
   </div>
-
-  <div class="systemTitle">
-    SMART STUDENT QR GATE VERIFICATION
-  </div>
-
-
-  <div id="modeBanner"
-       class="mode entry">
-
-    ENTRY MODE
-
-  </div>
-
-
-  <div class="modeButtons">
-
-    <button onclick="changeMode('ENTRY')">
-      ENTRY
-    </button>
-
-    <button onclick="changeMode('EXIT')">
-      EXIT
-    </button>
-
-  </div>
-
-</div>
-
-
-<!-- =====================================
-     CAMERA
-     ===================================== -->
-
-<div id="cameraCard"
-     class="cameraCard">
-
-  <div class="cameraTitle">
-
-    📷 SCAN STUDENT QR CODE
-
-  </div>
-
-
-  <div id="reader"></div>
-
-
-  <div id="cameraStatus"
-       class="cameraStatus">
-
-    Starting camera...
-
-  </div>
-
-</div>
-
-
-<!-- =====================================
-     RESULT
-     ===================================== -->
-
-<div id="result"
-     class="result ready">
-
-  <div class="small">
-
-    READY FOR STUDENT QR
-
-  </div>
-
-</div>
-
-
-</div>
 
 
 <script>
 
-
-/* =====================================
-   CONFIGURATION
-   ===================================== */
-
+/*******************************************************
+ * YOUR APPS SCRIPT WEB APP URL
+ *******************************************************/
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbzdQ0ElSvuQpLAFQ6cwACcoos_xECwXbh5uOXLqd1mAq3OpKmg5x1-FBpNzFoRa2JaFQ/exec";
+  'https://script.google.com/a/macros/deped.gov.ph/s/AKfycbzdQ0ElSvuqPzLAFQ6cwACcoos_xECwXbh5uOXLqd1mAq3OpKmg5x1-FBpNzFoRa2JaFQ/exec';
 
 
-/* =====================================
-   VARIABLES
-   ===================================== */
+/*
+ * IMPORTANT:
+ * Make sure this URL is exactly the same
+ * as your deployed Apps Script Web App URL.
+ */
 
-let mode = "ENTRY";
+
+/*******************************************************
+ * VARIABLES
+ *******************************************************/
+let currentMode = 'ENTRY';
 
 let scanner = null;
 
-let scanning = false;
+let scannerRunning = false;
 
-let processing = false;
+let processingScan = false;
 
-let waitingForNext = false;
 
+/*******************************************************
+ * PAGE LOAD
+ *******************************************************/
+window.onload = function() {
 
-/* =====================================
-   START CAMERA
-   ===================================== */
+  startScanner();
 
-function startCamera() {
+};
 
-  if (scanning ||
-      processing ||
-      waitingForNext) {
 
-    return;
+/*******************************************************
+ * CHANGE ENTRY / EXIT
+ *******************************************************/
+function setMode(mode) {
 
-  }
+  currentMode = mode;
 
 
-  scanner =
-    new Html5Qrcode("reader");
+  document
+    .getElementById('entryBtn')
+    .classList.toggle(
+      'active',
+      mode === 'ENTRY'
+    );
 
 
-  const config = {
-
-    fps: 10,
-
-    qrbox:
-      function(width, height) {
-
-        const size =
-          Math.min(width, height)
-          * 0.70;
-
-        return {
-
-          width: size,
-
-          height: size
-
-        };
-
-      },
-
-    aspectRatio: 1.0
-
-  };
-
-
-  scanner.start(
-
-    {
-      facingMode: "environment"
-    },
-
-    config,
-
-    onScanSuccess,
-
-    onScanFailure
-
-  )
-
-  .then(function() {
-
-    scanning = true;
-
-    document.getElementById(
-      "cameraStatus"
-    ).textContent =
-      "CAMERA READY — POINT AT STUDENT QR";
-
-  })
-
-  .catch(function(error) {
-
-    scanning = false;
-
-    document.getElementById(
-      "cameraStatus"
-    ).innerHTML =
-
-      '<span style="color:#a71919">' +
-
-      'CAMERA ERROR: ' +
-
-      escapeHtml(error) +
-
-      '</span>';
-
-  });
-
-}
-
-
-/* =====================================
-   QR SUCCESS
-   ===================================== */
-
-function onScanSuccess(decodedText) {
-
-  if (processing ||
-      waitingForNext) {
-
-    return;
-
-  }
-
-
-  if (!decodedText) {
-
-    return;
-
-  }
-
-
-  processing = true;
-
-
-  stopCamera();
-
-
-  const studentId =
-    String(decodedText).trim();
-
-
-  document.getElementById(
-    "cameraStatus"
-  ).textContent =
-    "QR DETECTED — VERIFYING...";
-
-
-  callAppsScript(
-    studentId,
-    mode
-  );
-
-}
-
-
-/* =====================================
-   QR FAILURE
-   ===================================== */
-
-function onScanFailure() {
-
-  // Keep scanning.
-
-}
-
-
-/* =====================================
-   CALL APPS SCRIPT
-   ===================================== */
-
-function callAppsScript(
-  studentId,
-  scanMode
-) {
+  document
+    .getElementById('exitBtn')
+    .classList.toggle(
+      'active',
+      mode === 'EXIT'
+    );
 
 
   /*
-   * JSONP callback
+   * Restart scanner when mode changes.
    */
 
-  const callbackName =
-    "tnhsCallback_" +
-    Date.now();
+  if (scannerRunning) {
 
+    stopScanner()
+      .then(function() {
 
-  window[callbackName] =
-    function(response) {
+        startScanner();
 
-      try {
-
-        showResult(response);
-
-      }
-
-      catch(error) {
-
-        showSystemError(
-          error.message
-        );
-
-      }
-
-      finally {
-
-        delete window[callbackName];
-
-      }
-
-    };
-
-
-  const url =
-
-    APPS_SCRIPT_URL +
-
-    "?api=scan" +
-
-    "&studentId=" +
-    encodeURIComponent(studentId) +
-
-    "&mode=" +
-    encodeURIComponent(scanMode) +
-
-    "&callback=" +
-    callbackName;
-
-
-  const script =
-    document.createElement(
-      "script"
-    );
-
-
-  script.src = url;
-
-
-  script.onerror =
-    function() {
-
-      delete window[callbackName];
-
-      showSystemError(
-        "Unable to connect to the TNHS server."
-      );
-
-    };
-
-
-  document.body.appendChild(script);
-
-}
-
-
-/* =====================================
-   SHOW RESULT
-   ===================================== */
-
-function showResult(r) {
-
-  processing = false;
-
-  waitingForNext = true;
-
-
-  const result =
-    document.getElementById(
-      "result"
-    );
-
-
-  /* ===================================
-     INVALID ID
-     =================================== */
-
-  if (!r.ok) {
-
-
-    if (
-      r.message ===
-      "INVALID / UNREGISTERED QR CODE"
-    ) {
-
-      result.className =
-        "result";
-
-
-      result.innerHTML =
-
-        '<div class="scanResult invalid">' +
-
-        'INVALID ID - No records found!' +
-
-        '</div>' +
-
-        '<div class="photoFallback">' +
-
-        'NO STUDENT RECORD' +
-
-        '</div>' +
-
-        '<div class="remark remarkRed">' +
-
-        'INVALID ID' +
-
-        '</div>' +
-
-        '<button class="next" ' +
-
-        'onclick="scanNext()">' +
-
-        'SCAN NEXT' +
-
-        '</button>';
-
-
-      beep(false);
-
-      return;
-
-    }
-
-
-    /* =================================
-       GATEPASS
-       ================================= */
-
-    if (
-      r.type === "gatepass"
-    ) {
-
-      result.className =
-        "result";
-
-
-      result.innerHTML =
-
-        '<div class="scanResult valid">' +
-
-        'VALID ID - Record Found' +
-
-        '</div>' +
-
-        studentHtml(
-          r.student
-        ) +
-
-        '<div class="remarkLabel">' +
-
-        'GATE REMARK' +
-
-        '</div>' +
-
-        '<div class="remark remarkRed">' +
-
-        'NEED GATEPASS' +
-
-        '</div>' +
-
-        '<button class="next" ' +
-
-        'onclick="scanNext()">' +
-
-        'SCAN NEXT' +
-
-        '</button>';
-
-
-      beep(false);
-
-      return;
-
-    }
-
-
-    /* =================================
-       OTHER ERROR
-       ================================= */
-
-    result.className =
-      "result";
-
-
-    result.innerHTML =
-
-      '<div class="scanResult invalid">' +
-
-      'INVALID ID - No records found!' +
-
-      '</div>' +
-
-      '<div class="remark remarkRed">' +
-
-      escapeHtml(
-        r.message ||
-        "INVALID ID"
-      ) +
-
-      '</div>' +
-
-      '<button class="next" ' +
-
-      'onclick="scanNext()">' +
-
-      'SCAN NEXT' +
-
-      '</button>';
-
-
-    beep(false);
-
-    return;
-
-  }
-
-
-  /* ===================================
-     VALID ENTRY
-     =================================== */
-
-  if (
-    r.mode === "ENTRY"
-  ) {
-
-    const onTime =
-      r.remarks === "ON TIME";
-
-
-    result.className =
-      "result";
-
-
-    result.innerHTML =
-
-      '<div class="scanResult valid">' +
-
-      'VALID ID - Record Found' +
-
-      '</div>' +
-
-      studentHtml(
-        r.student
-      ) +
-
-      '<div class="remarkLabel">' +
-
-      'GATE REMARK' +
-
-      '</div>' +
-
-      '<div class="remark ' +
-
-      (
-        onTime
-          ? 'remarkGreen'
-          : 'remarkRed'
-      ) +
-
-      '">' +
-
-      escapeHtml(
-        r.remarks
-      ) +
-
-      '</div>' +
-
-      '<button class="next" ' +
-
-      'onclick="scanNext()">' +
-
-      'SCAN NEXT' +
-
-      '</button>';
-
-
-    beep(true);
-
-    return;
-
-  }
-
-
-  /* ===================================
-     VALID EXIT
-     =================================== */
-
-  if (
-    r.mode === "EXIT"
-  ) {
-
-    const gatePass =
-      r.remarks ===
-      "NEED GATEPASS";
-
-
-    result.className =
-      "result";
-
-
-    result.innerHTML =
-
-      '<div class="scanResult valid">' +
-
-      'VALID ID - Record Found' +
-
-      '</div>' +
-
-      studentHtml(
-        r.student
-      ) +
-
-      '<div class="remarkLabel">' +
-
-      'GATE REMARK' +
-
-      '</div>' +
-
-      '<div class="remark ' +
-
-      (
-        gatePass
-          ? 'remarkRed'
-          : 'remarkGreen'
-      ) +
-
-      '">' +
-
-      escapeHtml(
-        r.remarks ||
-        "VERIFIED"
-      ) +
-
-      '</div>' +
-
-      '<button class="next" ' +
-
-      'onclick="scanNext()">' +
-
-      'SCAN NEXT' +
-
-      '</button>';
-
-
-    beep(!gatePass);
-
-  }
-
-}
-
-
-/* =====================================
-   STUDENT HTML
-   ===================================== */
-
-function studentHtml(s) {
-
-  let h = '';
-
-  // Use the image data supplied by Apps Script.
-  // This works even when the Google Drive photo is restricted.
-  if (s.photoDataUrl) {
-
-    h +=
-      '<img class="photo" ' +
-      'src="' + esc(s.photoDataUrl) + '" ' +
-      'alt="Student Photo">';
+      });
 
   } else {
 
-    h +=
-      '<div class="photoPlaceholder">' +
-      'PHOTO NOT AVAILABLE' +
-      '</div>';
+    startScanner();
+
   }
-
-  h +=
-    '<div class="name">' +
-    esc(s.name || '') +
-    '</div>';
-
-  h +=
-    '<div class="details">' +
-    'Grade ' +
-    esc(s.grade || '') +
-    ' - ' +
-    esc(s.section || '') +
-    '</div>';
-
-  h +=
-    '<div class="lrn">' +
-    'LRN: ' +
-    esc(s.lrn || '') +
-    '</div>';
-
-  return h;
-}
-
-
-/* =====================================
-   SCAN NEXT
-   ===================================== */
-
-function scanNext() {
-
-  waitingForNext = false;
-
-  processing = false;
-
-
-  document.getElementById(
-    "result"
-  ).className =
-    "result ready";
-
-
-  document.getElementById(
-    "result"
-  ).innerHTML =
-
-    '<div class="small">' +
-
-    'READY FOR NEXT STUDENT' +
-
-    '</div>';
-
-
-  document.getElementById(
-    "cameraStatus"
-  ).textContent =
-    "STARTING CAMERA...";
-
-
-  startCamera();
 
 }
 
 
-/* =====================================
-   CHANGE MODE
-   ===================================== */
+/*******************************************************
+ * START CAMERA
+ *******************************************************/
+function startScanner() {
 
-function changeMode(newMode) {
+  clearError();
 
-  if (newMode === mode) {
+  hideResult();
 
-    return;
+  processingScan = false;
 
-  }
-
-
-  if (
-    !confirm(
-      "Change gate mode to " +
-      newMode +
-      "?"
-    )
-  ) {
-
-    return;
-
-  }
-
-
-  mode = newMode;
-
-
-  const banner =
-    document.getElementById(
-      "modeBanner"
-    );
-
-
-  banner.textContent =
-    newMode === "ENTRY"
-      ? "ENTRY MODE"
-      : "EXIT MODE";
-
-
-  banner.className =
-    "mode " +
-    (
-      newMode === "ENTRY"
-        ? "entry"
-        : "exit"
-    );
-
-
-  stopCamera();
-
-
-  waitingForNext = false;
-
-  processing = false;
-
-
-  document.getElementById(
-    "result"
-  ).className =
-    "result ready";
-
-
-  document.getElementById(
-    "result"
-  ).innerHTML =
-
-    '<div class="small">' +
-
-    'READY FOR NEXT STUDENT' +
-
-    '</div>';
-
-
-  setTimeout(
-    startCamera,
-    500
-  );
-
-}
-
-
-/* =====================================
-   STOP CAMERA
-   ===================================== */
-
-function stopCamera() {
 
   if (!scanner) {
 
-    scanning = false;
-
-    return;
-
+    scanner =
+      new Html5Qrcode(
+        'reader'
+      );
   }
 
 
-  scanner.stop()
+  scanner
+    .start(
 
+      {
+        facingMode: 'environment'
+      },
+
+      {
+        fps: 10,
+
+        qrbox: function(
+          width,
+          height
+        ) {
+
+          const size =
+            Math.min(
+              width,
+              height
+            ) * 0.70;
+
+          return {
+            width: size,
+            height: size
+          };
+
+        }
+
+      },
+
+      onScanSuccess,
+
+      onScanFailure
+
+    )
     .then(function() {
 
-      scanning = false;
+      scannerRunning = true;
 
     })
+    .catch(function(error) {
 
-    .catch(function() {
+      scannerRunning = false;
 
-      scanning = false;
+      showError(
+        'Camera error: ' +
+        error
+      );
 
     });
 
 }
 
 
-/* =====================================
-   SYSTEM ERROR
-   ===================================== */
+/*******************************************************
+ * QR SCAN SUCCESS
+ *******************************************************/
+function onScanSuccess(
+  decodedText,
+  decodedResult
+) {
 
-function showSystemError(message) {
+  /*
+   * Prevent multiple reads of
+   * the same QR while processing.
+   */
 
-  processing = false;
-
-  waitingForNext = true;
-
-
-  document.getElementById(
-    "result"
-  ).className =
-    "result";
+  if (processingScan) {
+    return;
+  }
 
 
-  document.getElementById(
-    "result"
-  ).innerHTML =
+  processingScan = true;
 
-    '<div class="scanResult invalid">' +
 
-    'SYSTEM ERROR' +
+  const studentId =
+    extractStudentId(
+      decodedText
+    );
 
-    '</div>' +
 
-    '<div>' +
+  if (!studentId) {
 
-    escapeHtml(message) +
+    processingScan = false;
 
-    '</div>' +
+    showInvalid();
 
-    '<button class="next" ' +
+    return;
+  }
 
-    'onclick="scanNext()">' +
 
-    'TRY AGAIN' +
+  stopScanner()
+    .then(function() {
 
-    '</button>';
+      checkStudent(
+        studentId
+      );
+
+    });
 
 }
 
 
-/* =====================================
-   BEEP
-   ===================================== */
+/*******************************************************
+ * QR SCAN FAILURE
+ *******************************************************/
+function onScanFailure(error) {
 
-function beep(success) {
+  /*
+   * Ignore normal QR detection failures.
+   */
+}
+
+
+/*******************************************************
+ * EXTRACT STUDENT ID
+ *******************************************************/
+function extractStudentId(text) {
+
+  let value =
+    String(text || '')
+      .trim();
+
+
+  /*
+   * If QR contains only:
+   *
+   * TNHS-0001
+   *
+   * return it directly.
+   */
+
+  if (
+    /^TNHS-/i.test(value)
+  ) {
+
+    return value;
+  }
+
+
+  /*
+   * If QR contains a URL such as:
+   *
+   * https://...studentId=TNHS-0001
+   *
+   * try to get studentId.
+   */
 
   try {
 
-    const AudioContext =
-      window.AudioContext ||
-      window.webkitAudioContext;
+    const url =
+      new URL(value);
 
 
-    if (!AudioContext) {
+    const id =
+      url.searchParams.get(
+        'studentId'
+      );
 
-      return;
 
+    if (id) {
+
+      return id.trim();
     }
 
+  } catch (error) {
 
-    const context =
-      new AudioContext();
-
-
-    const oscillator =
-      context.createOscillator();
-
-
-    const gain =
-      context.createGain();
-
-
-    oscillator.frequency.value =
-      success
-        ? 880
-        : 220;
-
-
-    gain.gain.value = .06;
-
-
-    oscillator.connect(gain);
-
-    gain.connect(
-      context.destination
-    );
-
-
-    oscillator.start();
-
-
-    oscillator.stop(
-      context.currentTime +
-      (
-        success
-          ? .10
-          : .18
-      )
-    );
-
+    /*
+     * Not a URL.
+     */
   }
 
-  catch(e) {}
 
+  /*
+   * If QR has extra text,
+   * try to locate TNHS-xxxx.
+   */
+
+  const match =
+    value.match(
+      /TNHS-[A-Za-z0-9_-]+/i
+    );
+
+
+  if (match) {
+
+    return match[0];
+  }
+
+
+  return '';
 }
 
 
-/* =====================================
-   ESCAPE HTML
-   ===================================== */
+/*******************************************************
+ * CALL APPS SCRIPT
+ *******************************************************/
+function checkStudent(
+  studentId
+) {
 
-function escapeHtml(value) {
+  showLoading();
 
-  return String(value || "")
-    .replace(
-      /[&<>"']/g,
-      function(c) {
 
-        return {
+  const callbackName =
+    'tnhsCallback_' +
+    Date.now();
 
-          '&': '&amp;',
-          '<': '&lt;',
-          '>': '&gt;',
-          '"': '&quot;',
-          "'": '&#39;'
 
-        }[c];
+  /*
+   * Create JSONP callback.
+   */
 
+  window[callbackName] =
+    function(data) {
+
+      try {
+
+        processResult(data);
+
+      } finally {
+
+        delete window[
+          callbackName
+        ];
+
+        const script =
+          document.getElementById(
+            callbackName
+          );
+
+        if (script) {
+
+          script.remove();
+
+        }
       }
+
+    };
+
+
+  const url =
+    APPS_SCRIPT_URL +
+    '?api=scan' +
+    '&studentId=' +
+    encodeURIComponent(
+      studentId
+    ) +
+    '&mode=' +
+    encodeURIComponent(
+      currentMode
+    ) +
+    '&callback=' +
+    encodeURIComponent(
+      callbackName
     );
+
+
+  const script =
+    document.createElement(
+      'script'
+    );
+
+
+  script.id =
+    callbackName;
+
+  script.src = url;
+
+  script.onerror =
+    function() {
+
+      hideLoading();
+
+      showError(
+        'Unable to connect to the TNHS server.'
+      );
+
+      processingScan = false;
+    };
+
+
+  document
+    .body
+    .appendChild(script);
 
 }
 
 
-/* =====================================
-   SAFE URL
-   ===================================== */
+/*******************************************************
+ * PROCESS SERVER RESULT
+ *******************************************************/
+function processResult(data) {
 
-function safeUrl(url) {
+  hideLoading();
 
-  return escapeHtml(url)
-    .replace(
-      /javascript:/gi,
-      ''
+
+  if (!data) {
+
+    showError(
+      'No response from server.'
     );
+
+    processingScan = false;
+
+    return;
+  }
+
+
+  /*
+   * INVALID ID
+   */
+
+  if (
+    data.ok === false &&
+    data.type !== 'duplicate'
+  ) {
+
+    showInvalid(
+      data.message ||
+      'INVALID ID - No records found!'
+    );
+
+    return;
+  }
+
+
+  /*
+   * DUPLICATE SCAN
+   */
+
+  if (
+    data.type === 'duplicate'
+  ) {
+
+    showDuplicate(data);
+
+    return;
+  }
+
+
+  /*
+   * VALID STUDENT
+   */
+
+  if (
+    data.ok === true &&
+    data.student
+  ) {
+
+    showStudentResult(
+      data
+    );
+
+    return;
+  }
+
+
+  showError(
+    data.message ||
+    'Unexpected server response.'
+  );
+
+  processingScan = false;
+}
+
+
+/*******************************************************
+ * DISPLAY VALID STUDENT
+ *******************************************************/
+function showStudentResult(
+  data
+) {
+
+  const student =
+    data.student;
+
+
+  document
+    .getElementById(
+      'status'
+    )
+    .className =
+      'status valid';
+
+
+  document
+    .getElementById(
+      'status'
+    )
+    .textContent =
+      'VALID ID - Record Found';
+
+
+  document
+    .getElementById(
+      'studentName'
+    )
+    .textContent =
+      student.name || '';
+
+
+  document
+    .getElementById(
+      'studentGrade'
+    )
+    .textContent =
+      student.grade || '';
+
+
+  document
+    .getElementById(
+      'studentSection'
+    )
+    .textContent =
+      student.section || '';
+
+
+  document
+    .getElementById(
+      'studentLRN'
+    )
+    .textContent =
+      student.lrn || '';
+
+
+  document
+    .getElementById(
+      'studentId'
+    )
+    .textContent =
+      student.studentId || '';
+
+
+  /*
+   * PHOTO IS OPTIONAL.
+   *
+   * If photoUrl works, display it.
+   * If blank/broken, scanner still works.
+   */
+
+  displayPhoto(
+    student.photoUrl
+  );
+
+
+  /*
+   * Display remark.
+   */
+
+  displayRemark(
+    data.remarks
+  );
+
+
+  document
+    .getElementById(
+      'result'
+    )
+    .style.display =
+      'block';
+
+
+  processingScan = false;
+}
+
+
+/*******************************************************
+ * DISPLAY PHOTO
+ *******************************************************/
+function displayPhoto(
+  photoUrl
+) {
+
+  const box =
+    document.getElementById(
+      'photoBox'
+    );
+
+
+  box.innerHTML =
+    'Photo unavailable';
+
+
+  if (
+    !photoUrl ||
+    String(photoUrl).trim() === ''
+  ) {
+
+    return;
+  }
+
+
+  const img =
+    document.createElement(
+      'img'
+    );
+
+
+  img.src =
+    String(photoUrl).trim();
+
+
+  img.alt =
+    'Student Photo';
+
+
+  img.onload =
+    function() {
+
+      box.innerHTML = '';
+
+      box.appendChild(img);
+
+    };
+
+
+  img.onerror =
+    function() {
+
+      box.innerHTML =
+        'Photo unavailable';
+
+    };
 
 }
 
 
-/* =====================================
-   PAGE LOAD
-   ===================================== */
+/*******************************************************
+ * DISPLAY REMARK
+ *******************************************************/
+function displayRemark(
+  remarks
+) {
 
-window.addEventListener(
-  "load",
-  function() {
-
-    setTimeout(
-      startCamera,
-      700
+  const element =
+    document.getElementById(
+      'remark'
     );
+
+
+  const value =
+    String(
+      remarks || ''
+    );
+
+
+  element.textContent =
+    value;
+
+
+  element.className =
+    'remark';
+
+
+  /*
+   * ENTRY ON TIME
+   */
+
+  if (
+    value === 'ON TIME'
+  ) {
+
+    element.classList.add(
+      'green'
+    );
+
+    return;
+  }
+
+
+  /*
+   * LATE
+   */
+
+  if (
+    value ===
+      'LATE-Needs Gate Pass'
+  ) {
+
+    element.classList.add(
+      'red'
+    );
+
+    return;
+  }
+
+
+  /*
+   * EARLY EXIT
+   */
+
+  if (
+    value ===
+      'NEED GATEPASS'
+  ) {
+
+    element.classList.add(
+      'red'
+    );
+
+    return;
+  }
+
+
+  /*
+   * NORMAL EXIT
+   */
+
+  element.classList.add(
+    'blue'
+  );
+}
+
+
+/*******************************************************
+ * INVALID DISPLAY
+ *******************************************************/
+function showInvalid(
+  message
+) {
+
+  hideLoading();
+
+  hideScannerArea();
+
+
+  const status =
+    document.getElementById(
+      'status'
+    );
+
+
+  status.className =
+    'status invalid';
+
+
+  status.textContent =
+    message ||
+    'INVALID ID - No records found!';
+
+
+  document
+    .getElementById(
+      'photoBox'
+    )
+    .innerHTML =
+      'No student record';
+
+
+  document
+    .getElementById(
+      'studentName'
+    )
+    .textContent = '';
+
+
+  document
+    .getElementById(
+      'studentGrade'
+    )
+    .textContent = '';
+
+
+  document
+    .getElementById(
+      'studentSection'
+    )
+    .textContent = '';
+
+
+  document
+    .getElementById(
+      'studentLRN'
+    )
+    .textContent = '';
+
+
+  document
+    .getElementById(
+      'studentId'
+    )
+    .textContent = '';
+
+
+  const remark =
+    document.getElementById(
+      'remark'
+    );
+
+
+  remark.className =
+    'remark red';
+
+
+  remark.textContent =
+    'INVALID ID';
+
+
+  document
+    .getElementById(
+      'result'
+    )
+    .style.display =
+      'block';
+
+
+  processingScan = false;
+}
+
+
+/*******************************************************
+ * DUPLICATE DISPLAY
+ *******************************************************/
+function showDuplicate(
+  data
+) {
+
+  hideLoading();
+
+  hideScannerArea();
+
+
+  const status =
+    document.getElementById(
+      'status'
+    );
+
+
+  status.className =
+    'status warning';
+
+
+  status.textContent =
+    'ALREADY SCANNED';
+
+
+  const student =
+    data.student;
+
+
+  if (student) {
+
+    document
+      .getElementById(
+        'studentName'
+      )
+      .textContent =
+        student.name || '';
+
+
+    document
+      .getElementById(
+        'studentGrade'
+      )
+      .textContent =
+        student.grade || '';
+
+
+    document
+      .getElementById(
+        'studentSection'
+      )
+      .textContent =
+        student.section || '';
+
+
+    document
+      .getElementById(
+        'studentLRN'
+      )
+      .textContent =
+        student.lrn || '';
+
+
+    document
+      .getElementById(
+        'studentId'
+      )
+      .textContent =
+        student.studentId || '';
+
+
+    displayPhoto(
+      student.photoUrl
+    );
+  }
+
+
+  const remark =
+    document.getElementById(
+      'remark'
+    );
+
+
+  remark.className =
+    'remark red';
+
+
+  remark.textContent =
+    data.remarks ||
+    'Already scanned today.';
+
+
+  document
+    .getElementById(
+      'result'
+    )
+    .style.display =
+      'block';
+
+
+  processingScan = false;
+}
+
+
+/*******************************************************
+ * SCAN NEXT
+ *******************************************************/
+function scanNext() {
+
+  hideResult();
+
+  clearError();
+
+  processingScan = false;
+
+  showScannerArea();
+
+  startScanner();
+
+}
+
+
+/*******************************************************
+ * STOP SCANNER
+ *******************************************************/
+function stopScanner() {
+
+  if (
+    scanner &&
+    scannerRunning
+  ) {
+
+    return scanner
+      .stop()
+      .then(function() {
+
+        scannerRunning = false;
+
+      })
+      .catch(function() {
+
+        scannerRunning = false;
+
+      });
 
   }
-);
+
+
+  return Promise.resolve();
+}
+
+
+/*******************************************************
+ * SHOW / HIDE
+ *******************************************************/
+function hideResult() {
+
+  document
+    .getElementById(
+      'result'
+    )
+    .style.display =
+      'none';
+
+}
+
+
+function showScannerArea() {
+
+  document
+    .getElementById(
+      'scannerArea'
+    )
+    .style.display =
+      'block';
+
+}
+
+
+function hideScannerArea() {
+
+  document
+    .getElementById(
+      'scannerArea'
+    )
+    .style.display =
+      'none';
+
+}
+
+
+function showLoading() {
+
+  document
+    .getElementById(
+      'loading'
+    )
+    .style.display =
+      'block';
+
+}
+
+
+function hideLoading() {
+
+  document
+    .getElementById(
+      'loading'
+    )
+    .style.display =
+      'none';
+
+}
+
+
+/*******************************************************
+ * ERROR
+ *******************************************************/
+function showError(
+  message
+) {
+
+  document
+    .getElementById(
+      'errorMessage'
+    )
+    .textContent =
+      message || '';
+
+}
+
+
+function clearError() {
+
+  document
+    .getElementById(
+      'errorMessage'
+    )
+    .textContent =
+      '';
+
+}
 
 </script>
 
 </body>
+
 </html>
