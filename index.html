@@ -583,7 +583,7 @@ body {
 <!-- =====================================
      RESULT
      ===================================== -->
-
+<div id="responseTimer" style="font-size:14px;text-align:center;margin:6px;color:#555;"></div>
 <div id="result"
      class="result ready">
 
@@ -794,14 +794,22 @@ const requestStartedAt = performance.now();
   window[callbackName] =
   function(response) {
 
-    const elapsed =
-      performance.now() - requestStartedAt;
+    const elapsed = Math.round(
+  performance.now() - requestStartedAt
+);
 
-    console.log(
-      "TNHS verification response:",
-      Math.round(elapsed),
-      "ms"
-    );
+console.log(
+  "TNHS verification response:",
+  elapsed,
+  "ms"
+);
+
+const timerDisplay = document.getElementById("responseTimer");
+
+if (timerDisplay) {
+  timerDisplay.textContent =
+    "Server response: " + elapsed + " ms";
+}
 
     try {
 
