@@ -781,7 +781,7 @@ function callAppsScript(
   scanMode
 ) {
 
-
+const requestStartedAt = performance.now();
   /*
    * JSONP callback
    */
@@ -792,9 +792,18 @@ function callAppsScript(
 
 
   window[callbackName] =
-    function(response) {
+  function(response) {
 
-      try {
+    const elapsed =
+      performance.now() - requestStartedAt;
+
+    console.log(
+      "TNHS verification response:",
+      Math.round(elapsed),
+      "ms"
+    );
+
+    try {
 
         showResult(response);
 
