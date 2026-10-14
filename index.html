@@ -623,6 +623,8 @@ let scanning = false;
 let processing = false;
 
 let waitingForNext = false;
+let activeScanToken = 0;
+let lastLookupElapsed = 0;
 
 
 /* =====================================
@@ -721,43 +723,22 @@ function startCamera() {
    ===================================== */
 
 function onScanSuccess(decodedText) {
-
-  if (processing ||
-      waitingForNext) {
-
-    return;
-
-  }
-
-
-  if (!decodedText) {
-
-    return;
-
-  }
-
+  if (processing || waitingForNext) return;
+  if (!decodedText) return;
 
   processing = true;
-
-
+  waitingForNext = false;
   stopCamera();
 
+  const studentId = String(decodedText).trim();
+  const scanMode = mode;
+  const token = ++activeScanToken;
 
-  const studentId =
-    String(decodedText).trim();
+  document.getElementById("cameraStatus").textContent =
+    "QR DETECTED — LOOKING UP LEARNER...";
 
-
-  document.getElementById(
-    "cameraStatus"
-  ).textContent =
-    "QR DETECTED — VERIFYING...";
-
-
-  callAppsScript(
-    studentId,
-    mode
-  );
-
+  // First request returns learner details without waiting for gate-log work.
+  callLookup(studentId, scanMode, token);
 }
 
 
@@ -776,103 +757,195 @@ function onScanFailure() {
    CALL APPS SCRIPT
    ===================================== */
 
-function callAppsScript(
-  studentId,
-  scanMode
-) {
+/* =====================================
+   API REQUESTS
+   ===================================== */
 
-const requestStartedAt = performance.now();
-  /*
-   * JSONP callback
-   */
-
+function requestApi(api, studentId, scanMode, token, onSuccess, onFailure) {
+  const requestStartedAt = performance.now();
   const callbackName =
-    "tnhsCallback_" +
-    Date.now();
+    "tnhsCallback_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
 
+  let script = null;
+  let completed = false;
 
-  window[callbackName] =
-  function(response) {
+  window[callbackName] = function(response) {
+    if (completed) return;
+    completed = true;
 
-    const elapsed = Math.round(
-  performance.now() - requestStartedAt
-);
+    const elapsed = Math.round(performance.now() - requestStartedAt);
 
-console.log(
-  "TNHS verification response:",
-  elapsed,
-  "ms"
-);
-
-const timerDisplay = document.getElementById("responseTimer");
-
-if (timerDisplay) {
-  timerDisplay.textContent =
-    "Server response: " + elapsed + " ms";
-}
-
-    try {
-
-        showResult(response);
-
+    if (api === "lookup") {
+      lastLookupElapsed = elapsed;
+      if (token === activeScanToken) {
+        document.getElementById("responseTimer").textContent =
+          "Learner lookup: " + elapsed + " ms";
       }
+    } else if (token === activeScanToken) {
+      document.getElementById("responseTimer").textContent =
+        "Learner lookup: " + lastLookupElapsed + " ms | Gate log: " + elapsed + " ms";
+    }
 
-      catch(error) {
+    delete window[callbackName];
+    if (script) script.remove();
 
-        showSystemError(
-          error.message
-        );
-
-      }
-
-      finally {
-
-        delete window[callbackName];
-
-      }
-
-    };
-
+    if (typeof onSuccess === "function") onSuccess(response, elapsed);
+  };
 
   const url =
-
     APPS_SCRIPT_URL +
+    "?api=" + encodeURIComponent(api) +
+    "&studentId=" + encodeURIComponent(studentId) +
+    "&mode=" + encodeURIComponent(scanMode) +
+    "&callback=" + encodeURIComponent(callbackName);
 
-    "?api=scan" +
-
-    "&studentId=" +
-    encodeURIComponent(studentId) +
-
-    "&mode=" +
-    encodeURIComponent(scanMode) +
-
-    "&callback=" +
-    callbackName;
-
-
-  const script =
-    document.createElement(
-      "script"
-    );
-
-
+  script = document.createElement("script");
   script.src = url;
 
+  script.onerror = function() {
+    if (completed) return;
+    completed = true;
+    delete window[callbackName];
+    if (script) script.remove();
 
-  script.onerror =
-    function() {
-
-      delete window[callbackName];
-
-      showSystemError(
-        "Unable to connect to the TNHS server."
-      );
-
-    };
-
+    if (typeof onFailure === "function") {
+      onFailure("Unable to connect to the TNHS server.");
+    }
+  };
 
   document.body.appendChild(script);
+}
 
+
+function callLookup(studentId, scanMode, token) {
+  requestApi(
+    "lookup",
+    studentId,
+    scanMode,
+    token,
+    function(response) {
+      if (token !== activeScanToken) return;
+
+      if (!response || !response.ok) {
+        showResult(response || {
+          ok: false,
+          message: "No response from TNHS server."
+        });
+        return;
+      }
+
+      // Show the learner as soon as the lookup is complete.
+      // Logging and duplicate checking continue separately in the background.
+      showPreview(response, token);
+      callRecord(studentId, scanMode, token);
+    },
+    function(message) {
+      if (token === activeScanToken) showSystemError(message);
+    }
+  );
+}
+
+
+function callRecord(studentId, scanMode, token) {
+  requestApi(
+    "scan",
+    studentId,
+    scanMode,
+    token,
+    function(response) {
+      // A stale response must not overwrite a newer learner's screen.
+      if (!response || !response.ok) {
+        const message = (response && response.message)
+          ? response.message
+          : "No response while recording the gate scan.";
+
+        if (token === activeScanToken) {
+          showLogWarning(message);
+        } else {
+          document.getElementById("cameraStatus").textContent =
+            "WARNING — A PREVIOUS GATE LOG WAS NOT CONFIRMED";
+          document.getElementById("responseTimer").textContent =
+            "WARNING: Check GATE_LOGS for the previous scan.";
+        }
+        return;
+      }
+
+      if (token !== activeScanToken) return;
+      showResult(response);
+    },
+    function(message) {
+      if (token === activeScanToken) {
+        showLogWarning(message);
+      } else {
+        document.getElementById("cameraStatus").textContent =
+          "WARNING — A PREVIOUS GATE LOG WAS NOT CONFIRMED";
+        document.getElementById("responseTimer").textContent =
+          "WARNING: Check GATE_LOGS for the previous scan.";
+      }
+    }
+  );
+}
+
+
+function showPreview(r, token) {
+  processing = false;
+  waitingForNext = true;
+
+  const result = document.getElementById("result");
+  const warningRemark =
+    r.mode === "ENTRY"
+      ? r.remarks !== "ON TIME"
+      : r.remarks === "NEED GATEPASS";
+
+  result.className = "result";
+  result.innerHTML =
+    '<div class="scanResult valid">' +
+      'RECORD FOUND — SAVING LOG...' +
+    '</div>' +
+    studentHtml(r.student) +
+    '<div class="remarkLabel">PRELIMINARY GATE REMARK</div>' +
+    '<div class="remark ' +
+      (warningRemark ? 'remarkRed' : 'remarkGreen') +
+    '">' +
+      escapeHtml(r.remarks || "VERIFYING") +
+    '</div>' +
+    '<div class="small" style="margin-top:8px">Gate log confirmation is processing.</div>' +
+    '<button class="next" onclick="scanNext()">SCAN NEXT</button>';
+
+  document.getElementById("cameraStatus").textContent =
+    "LEARNER DISPLAYED — GATE LOG SAVING IN BACKGROUND";
+}
+
+
+function showLogWarning(message) {
+  processing = false;
+  waitingForNext = true;
+
+  const result = document.getElementById("result");
+  const status = result.querySelector(".scanResult");
+  const remark = result.querySelector(".remark");
+
+  if (status) {
+    status.className = "scanResult invalid";
+    status.textContent = "LOG NOT CONFIRMED";
+  }
+
+  if (remark) {
+    remark.className = "remark remarkRed";
+    remark.textContent = "CHECK GATE LOG";
+  }
+
+  let note = result.querySelector(".logWarning");
+  if (!note) {
+    note = document.createElement("div");
+    note.className = "small logWarning";
+    note.style.marginTop = "8px";
+    result.appendChild(note);
+  }
+  note.textContent = message || "The learner was found, but the server did not confirm the gate log.";
+
+  document.getElementById("cameraStatus").textContent =
+    "WARNING — GATE LOG NOT CONFIRMED";
 }
 
 
@@ -891,6 +964,22 @@ function showResult(r) {
     document.getElementById(
       "result"
     );
+
+  // A duplicate is a valid learner record, but this scan was already logged.
+  if (r && r.ok && r.type === "duplicate") {
+    result.className = "result";
+    result.innerHTML =
+      '<div class="scanResult valid">VALID ID - Record Found</div>' +
+      studentHtml(r.student) +
+      '<div class="remarkLabel">GATE REMARK</div>' +
+      '<div class="remark remarkRed">ALREADY SCANNED</div>' +
+      '<div class="small" style="margin-top:8px">' +
+        escapeHtml(r.remarks || "This scan was already recorded today.") +
+      '</div>' +
+      '<button class="next" onclick="scanNext()">SCAN NEXT</button>';
+    beep(false);
+    return;
+  }
 
 
   /* ===================================
@@ -1270,6 +1359,8 @@ function studentHtml(s) {
 
 function scanNext() {
 
+  activeScanToken++; // Ignore UI responses from the previous scan; its log request still runs.
+
   waitingForNext = false;
 
   processing = false;
@@ -1330,6 +1421,7 @@ function changeMode(newMode) {
 
 
   mode = newMode;
+  activeScanToken++; // Ignore any old-mode response on the screen.
 
 
   const banner =
